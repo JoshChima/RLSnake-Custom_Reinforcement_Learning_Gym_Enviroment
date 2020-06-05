@@ -40,6 +40,8 @@ class SnakeEnv(gym.Env):
         return obs, reward, done, {}
 
     def render(self, mode="human", close=False):
+        if mode == 'rgb_array':
+            return self.Game.observe()
         self.Game.view()
 
 
