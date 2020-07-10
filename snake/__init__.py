@@ -7,7 +7,7 @@ register(
 )
 
 register(
-    id='SelfSnakeNoFrameskip-v0',
+    id='SnakeJCustom-v0',
     entry_point='snake.envs:SnakeEnv',
     max_episode_steps=1000000,
 )
