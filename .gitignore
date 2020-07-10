@@ -1,4 +1,5 @@
 runs/
+*.zip
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
@@ -7,7 +8,6 @@ __pycache__/
 # C extensions
 *.so
 *.dat
-
 # Distribution / packaging
 .Python
 build/

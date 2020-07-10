@@ -74,9 +74,9 @@ class Snake(object):
 
         self.state_stamp = 0
         self.total_body = 0
-        self.living_score = -0.1
+        self.living_score = 0
         self.score = 0
-        self.eat_score = 20
+        self.eat_score = 1
         self.death_score = -1
         self.tail = []
         self.head = pygame.rect.Rect(self.x, self.y, self.scl, self.scl)
@@ -163,7 +163,6 @@ class Snake(object):
             else:
                 self.score += self.living_score
                 return True
-
         else:
             self.score += self.living_score
             return True
@@ -197,12 +196,14 @@ class Snake(object):
 
 
 class SnakeMain():
-    def __init__(self, Width=400, Height=400, scl=20):
+    def __init__(self, Width=400, Height=400, scl=20, ALLOWRENDER=False):
         self.W = Width
         self.H = Height
         self.scl = scl
         self.run = False
-        # pygame.init()
+        self.ALLOWRENDER = ALLOWRENDER
+        if ALLOWRENDER:
+            pygame.init()
         # self.WINDOW = pygame.display.set_mode((self.W, self.H))
         self.WINDOW = pygame.Surface((self.W, self.H))
         self.snake = Snake(self.W, self.H, self.scl, True)
@@ -222,18 +223,20 @@ class SnakeMain():
         # img = cv2.rotate(arr, cv2.ROTATE_90_COUNTERCLOCKWISE)
         return img_bgr
 
+    def draw(self):
+        self.WINDOW.fill((0, 0, 0))
+        pygame.draw.rect(self.WINDOW, PINK, self.food.food_obj)
+        pygame.draw.rect(self.WINDOW, GREEN, self.snake.head_square)
+        for part in self.snake.tail:
+            pygame.draw.rect(self.WINDOW, WHITE, part)
+        
     def action(self, action):
         self.snake.botKeys(action)
         self.snake.update()
 
-        self.WINDOW.fill((0, 0, 0))
-        pygame.draw.rect(self.WINDOW, PINK, self.food.food_obj)
-        pygame.draw.rect(self.WINDOW, GREEN, self.snake.head_square)
-
         self.snake.eat(self.food)
 
-        for part in self.snake.tail:
-            pygame.draw.rect(self.WINDOW, WHITE, part)
+        self.draw()
 
         # guider
         # pygame.draw.circle(self.WINDOW, WHITE, (self.snake.guider.x, self.snake.guider.y), 4)
@@ -242,7 +245,8 @@ class SnakeMain():
             del self.food
             self.food = Food(self.W, self.H, self.scl, self.snake)
         
-        # pygame.display.update()    
+        if self.ALLOWRENDER:
+            pygame.display.update()    
 
         self.snake.isalive()
 
@@ -255,11 +259,16 @@ class SnakeMain():
         if self.snake.isalive():
             return False
         else:
-            print('##################### Score: %s ########################'%(self.snake.score))
+            # print('##################### Score: %s ########################'%(self.snake.score))
+            pass
         return True
 
     def view(self):
-        print('Score: %s'%(self.snake.score))
+        # Must be called before making actions
+        del self.WINDOW
+        self.WINDOW = pygame.display.set_mode((self.W, self.H))
+        self.ALLOWRENDER = True
+        # print('Score: %s'%(self.snake.score))
 
     def restartSnake(self):
         del self.snake

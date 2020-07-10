@@ -5,9 +5,9 @@ from snake.envs.Snake import SnakeMain
 import random
 import pygame
 
-WIDTH = 400
-HEIGHT = 400
-SCL = 20
+WIDTH = 100
+HEIGHT = 100
+SCL = 10
 
 # self.x = random.randint(
 #             0, (self.enviroment_width-self.scl)/self.scl) * self.scl
@@ -15,9 +15,9 @@ SCL = 20
 #             0, (self.enviroment_height-self.scl)/self.scl) * self.scl
 
 class SnakeEnv(gym.Env):
-    metadata = {'render.modes' : ['human']}
+    metadata = {'render.modes' : ['human', 'rgb_array']}
     def __init__(self):
-        self.Game = SnakeMain(WIDTH, HEIGHT)
+        self.Game = SnakeMain(WIDTH, HEIGHT, SCL)
         # TODO spaces
         self.action_space = spaces.Discrete(5)
     # Example for using image as input:
@@ -25,25 +25,34 @@ class SnakeEnv(gym.Env):
             low=0, high=255, shape=(self.Game.W, self.Game.H, 3), dtype=np.uint8)
 
     def reset(self):
-        # pygame.quit()
+        AR = self.Game.ALLOWRENDER
+        if AR:
+            pygame.quit()
         del self.Game
-        self.Game = SnakeMain(WIDTH, HEIGHT)
+        self.Game = SnakeMain(WIDTH, HEIGHT, SCL, AR)
+        if AR:
+            self.Game.view()
+        self.Game.draw()
         obs = self.Game.observe()
         return obs
 
     def step(self, action):
-        # pygame.event.get()
+        if self.Game.ALLOWRENDER:
+            pygame.event.get()
         self.Game.action(action)
         obs = (self.Game.observe())
         reward = self.Game.evaluate()
         done = self.Game.is_done()
         return obs, reward, done, {}
 
-    def render(self, mode="human", close=False):
+    def render(self, mode="human"):
         if mode == 'rgb_array':
             return self.Game.observe()
         self.Game.view()
 
+    def close(self):
+        if self.Game.ALLOWRENDER:
+            pygame.quit()
 
 class SnakeRender(gym.Wrapper):
     """Render env by calling its render method.
