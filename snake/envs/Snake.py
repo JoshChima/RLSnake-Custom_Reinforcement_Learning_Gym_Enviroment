@@ -5,7 +5,6 @@ import collections as coll
 import random
 import cv2
 import time
-import turtle
 
 
 BLACK = (0, 0, 0)
